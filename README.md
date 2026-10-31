@@ -3,6 +3,9 @@
 A minimal, standalone FastAPI bot for the platform's `poker-bot.v2` protocol.
 No platform installation needed. Python 3.10+.
 
+For networking, verification, poker state, action rules, and debugging with a coding agent, see
+the [bot-building FAQ](faq.md).
+
 ## Run
 
 From this directory:
