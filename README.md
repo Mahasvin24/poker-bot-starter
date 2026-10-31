@@ -26,7 +26,10 @@ Edit **`choose_action()` in `app.py`**. It receives an `ActionRequest` and retur
 `(action, amount_to)`. The starter checks when possible, otherwise calls, otherwise folds.
 The endpoint copies the current decision identifiers into the response for you.
 
-The Pydantic models in `models.py` describe all inputs:
+`models.py` has two Pydantic models: `ActionRequest` (input) and
+`ActionResponse` (output). Nested game state uses typed dictionaries, which
+Pydantic also validates and documents in `/docs`. Access nested fields with
+brackets, for example `request.player["hole_cards"]` or `request.table["pot"]`:
 
 | Input | Meaning |
 | --- | --- |
@@ -57,6 +60,10 @@ Respond comfortably within one second (the platform times out after three second
 Use your LAN IP when registering; `localhost` points at the platform machine.
 Allow port `8001` through your firewall so the platform can reach your laptop.
 Keep `.env` private; it is ignored by Git.
+
+The starter has health and action endpoints, plus a small verification endpoint.
+`/v1/verify` is required because the platform checks your bot's token and challenge
+before allowing it to join a match. It needs no separate Pydantic model.
 
 The platform calls these routes (already implemented):
 

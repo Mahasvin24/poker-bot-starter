@@ -5,9 +5,9 @@ import secrets
 from pathlib import Path
 
 from dotenv import load_dotenv
-from fastapi import Depends, FastAPI, Header, HTTPException
+from fastapi import Body, Depends, FastAPI, Header, HTTPException
 
-from models import ActionRequest, ActionResponse, ActionType, VerifyMessage
+from models import ActionRequest, ActionResponse, ActionType, Protocol
 
 load_dotenv(Path(__file__).with_name(".env"))
 BOT_TOKEN = os.environ.get("BOT_TOKEN", "").strip()
@@ -28,11 +28,11 @@ def authorize(authorization: str | None = Header(default=None)) -> None:
 def choose_action(request: ActionRequest) -> tuple[ActionType, int | None]:
     """TODO: Replace this function with your poker strategy.
 
-    Use request.player.hole_cards, request.table, and request.legal_actions.
+    Use request.player["hole_cards"], request.table, and request.legal_actions.
     For a raise, return ("raise", amount_to) within the provided raise bounds.
     amount_to is your TOTAL commitment this street, not extra chips to add.
     """
-    allowed = {option.action for option in request.legal_actions}
+    allowed = {option["action"] for option in request.legal_actions}
     for action in ("check", "call", "fold"):
         if action in allowed:
             return action, None
@@ -40,16 +40,7 @@ def choose_action(request: ActionRequest) -> tuple[ActionType, int | None]:
     raise HTTPException(status_code=422, detail="No check, call, or fold available")
 
 
-@app.get("/v1/health")
-async def health() -> dict[str, str]:
-    return {"protocol": "poker-bot.v2", "status": "ready"}
-
-
-@app.post("/v1/verify", dependencies=[Depends(authorize)])
-async def verify(request: VerifyMessage) -> VerifyMessage:
-    return request  # Echo the platform's challenge unchanged.
-
-
+# Do not modify this route; implement your strategy in choose_action() above.
 @app.post("/v1/action", dependencies=[Depends(authorize)])
 async def action(request: ActionRequest) -> ActionResponse:
     selected, amount_to = choose_action(request)
@@ -62,3 +53,18 @@ async def action(request: ActionRequest) -> ActionResponse:
         action=selected,
         amount_to=amount_to,
     )
+
+
+# Do not modify the routes below. The platform requires these exact responses
+# to check that your bot is running and verify its connection.
+@app.get("/v1/health")
+async def health() -> dict[str, str]:
+    return {"protocol": "poker-bot.v2", "status": "ready"}
+
+
+@app.post("/v1/verify", dependencies=[Depends(authorize)])
+async def verify(
+    protocol: Protocol = Body(), challenge: str = Body()
+) -> dict[str, str]:
+    """Required by the platform's connection check; echo its challenge unchanged."""
+    return {"protocol": protocol, "challenge": challenge}
