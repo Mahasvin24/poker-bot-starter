@@ -66,7 +66,7 @@ instructions with the standalone starter's requirements.
 
 ### Which protocol and documentation should an agent use?
 
-Use this FAQ, the local [README](README.md), [app.py](app.py), and [models.py](models.py)
+Use this FAQ, the local [README](README.md), [bot.py](bot.py), and [models.py](models.py)
 first. The platform references below are optional and point into a sibling platform checkout;
 you do not need that checkout to implement your bot. If unavailable, ask the organizer for the
 protocol reference or use your bot's local `/docs` to inspect the input and output shapes.
@@ -85,10 +85,10 @@ platform also enforces stricter types, action legality, current identifiers, and
 
 ### What should I edit in the Python starter?
 
-Edit `choose_action()` in `poker-bot-starter/app.py`. It receives an `ActionRequest` and returns
+Edit `choose_action()` in `poker-bot-starter/bot.py`. It receives an `ActionRequest` and returns
 `(action, amount_to)`. The existing endpoint builds the response and copies the decision
-identifiers for you. Keep the health, authorization, verification, and action route plumbing
-intact while developing your strategy.
+identifiers for you. Keep `api.py` (routes and authorization),
+`app.py` (setup), and `models.py` (wire contracts) intact while developing your strategy.
 
 Nested input values are dictionaries, not Pydantic objects:
 

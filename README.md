@@ -25,7 +25,7 @@ Restart the server after changing `.env`.
 
 ## Write your strategy
 
-Edit **`choose_action()` in `app.py`**. It receives an `ActionRequest` and returns
+Edit **`choose_action()` in `bot.py`**. It receives an `ActionRequest` and returns
 `(action, amount_to)`. The starter checks when possible, otherwise calls, otherwise folds.
 The endpoint copies the current decision identifiers into the response for you.
 
@@ -75,6 +75,20 @@ The platform calls these routes (already implemented):
 | `GET /v1/health` | Return protocol and ready status. | None |
 | `POST /v1/verify` | Echo the platform's challenge. | `Authorization: Bearer <BOT_TOKEN>` |
 | `POST /v1/action` | Receive game state and return a legal action. | Same bearer token |
+
+## Code organization
+
+| File | Responsibility | Participant edits |
+| --- | --- | --- |
+| `bot.py` | Poker strategy. | Yes |
+| `app.py` | Environment loading and application setup. | Normally leave intact |
+| `api.py` | Fixed routes, bearer authentication, and response construction. | Leave intact |
+| `models.py` | Platform request and response contracts. | Leave intact |
+
+`app.py` mounts an `APIRouter` from `api.py`. Authentication is shared by all
+protected routes, while health stays public. Routers keep protocol plumbing away
+from editable bot behavior and group endpoints in `/docs`; they do not enforce
+file permissions or prevent participants from modifying Python files.
 
 For a complete JSON request example and the authoritative schemas, see the main
 platform's [protocol reference](../acm-poker-bot-platform/examples/bots/README.md)
