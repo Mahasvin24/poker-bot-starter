@@ -8,6 +8,9 @@ import bot
 from models import (
     ActionRequest,
     ActionResponse,
+    GameEndRequest,
+    GameResponse,
+    GameStartRequest,
     Protocol,
 )
 
@@ -45,6 +48,18 @@ def create_router(bot_token: str) -> APIRouter:
             action=selected,
             amount_to=amount_to,
         )
+
+    @authenticated.post("/game/start", tags=["Match lifecycle"])
+    async def game_start(request: GameStartRequest) -> GameResponse:
+        """Receive the platform's match start notification."""
+        bot.on_game_start(request)
+        return GameResponse(match_id=request.match_id, entrant_id=request.entrant_id)
+
+    @authenticated.post("/game/end", tags=["Match lifecycle"])
+    async def game_end(request: GameEndRequest) -> GameResponse:
+        """Receive the platform's match results or cancellation notification."""
+        bot.on_game_end(request)
+        return GameResponse(match_id=request.match_id, entrant_id=request.entrant_id)
 
     router.include_router(authenticated)
     return router

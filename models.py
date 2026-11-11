@@ -58,6 +58,44 @@ class Blinds(TypedDict):
     big_blind_ante: int
 
 
+class GameStartRequest(BaseModel):
+    """Match opening configuration, also sent again after platform recovery."""
+
+    protocol: Protocol
+    match_id: str
+    table_id: str
+    entrant_id: str
+    starting_stack: int = Field(gt=0)
+    blinds: Blinds
+
+
+class GameStanding(BaseModel):
+    """One entrant's final result; cancelled matches may omit standings."""
+
+    entrant_id: str
+    position: int = Field(ge=1, le=6)
+    final_stack: int = Field(ge=0)
+
+
+class GameEndRequest(BaseModel):
+    """Whole-match completion or cancellation, including eliminated bots."""
+
+    protocol: Protocol
+    match_id: str
+    table_id: str
+    entrant_id: str
+    status: Literal["completed", "cancelled"]
+    standings: list[GameStanding] = Field(default_factory=list)
+
+
+class GameResponse(BaseModel):
+    """Acknowledgement shared by both match lifecycle endpoints."""
+
+    protocol: Protocol = "poker-bot.v2"
+    match_id: str
+    entrant_id: str
+
+
 class SidePot(TypedDict):
     """A pot and the seats eligible to win it."""
 

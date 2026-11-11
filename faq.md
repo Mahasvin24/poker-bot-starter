@@ -87,7 +87,8 @@ platform also enforces stricter types, action legality, current identifiers, and
 
 Edit `choose_action()` in `poker-bot-starter/bot.py`. It receives an `ActionRequest` and returns
 `(action, amount_to)`. The existing endpoint builds the response and copies the decision
-identifiers for you. Keep `api.py` (routes and authorization),
+identifiers for you. Optional `on_game_start()` and `on_game_end()` hooks in the same file
+receive whole-match lifecycle notifications. Keep `api.py` (routes and authorization),
 `app.py` (setup), and `models.py` (wire contracts) intact while developing your strategy.
 
 Nested input values are dictionaries, not Pydantic objects:
